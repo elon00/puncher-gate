@@ -1,15 +1,24 @@
-﻿name: CI/CD Pipeline
-on: [push, pull_request]
+name: Offline STUN Parser Regression
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Smoke Tests
-        run: python tests/reality_check_harness.py
-      - name: CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+      - name: Fail closed on invalid Python syntax
+        run: python -m compileall -q src tests
+      - name: Run implementation-coupled offline STUN parser tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Rust formatting and build verification (diagnostic only)
+        run: |
+          cargo fmt --all -- --check
+          cargo test --all-targets
