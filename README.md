@@ -9,7 +9,7 @@ python -m compileall -q src tests
 python -m unittest discover -s tests -p 'test_*.py' -v
 python tests/reality_check_harness.py
 cargo fmt --all -- --check
-cargo test --all-targets
+cargo test --frozen --offline --all-targets
 ```
 
 The Python tests construct valid and adversarial STUN fixtures, invoke the real parser, check transaction-ID matching and bounds handling, and exercise the command-line interface. `src/main.rs` is a diagnostic message only; it does not provide a NAT implementation.
@@ -26,3 +26,5 @@ The Python tests construct valid and adversarial STUN fixtures, invoke the real 
 ## Acceptance gates
 
 CI must run the implementation-coupled regression suite and Python CodeQL. Green CI is necessary but insufficient for security approval. A production STUN/NAT traversal product additionally needs real network integration tests, authentication and spoofing threat analysis, RFC conformance, resource limits, independent review and deployment-specific acceptance. Keep deployment blocked.
+
+CI pins Python 3.13.16, Rust 1.99.1 with rustfmt, and action commits. Cargo.lock freezes the dependency-free diagnostic binary. The Solidity source has only its leading UTF-8 BOM removed; compilation is not token, EVM, economics, or mainnet acceptance. requirements.txt is historical and is not installed by this stdlib-only parser workflow.
