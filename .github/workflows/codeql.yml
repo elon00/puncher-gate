@@ -1,32 +1,19 @@
-name: "CodeQL Reality Check & Test Battery"
-
+name: CodeQL Python Static Analysis
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
-
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+  security-events: write
 jobs:
-  reality-check:
+  analyze:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: github/codeql-action/init@5c8ea125689a2c5ae2672d1d914ac4bcd95d1b4b
         with:
-          languages: javascript-typescript
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@3
-
-      - name: Run Smoke & Regression Battery
-        run: |
-          echo "[+] Executing QMOOSA Reality Check..."
-          echo "[+] Score: 100/100 VERIFIED"
+          languages: python
+      - uses: github/codeql-action/analyze@5c8ea125689a2c5ae2672d1d914ac4bcd95d1b4b
